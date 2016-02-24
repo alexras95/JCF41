@@ -10,6 +10,8 @@ package woordenapplicatie.gui;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -70,7 +72,10 @@ public class WoordenController implements Initializable {
 
     @FXML
     private void sorteerAction(ActionEvent event) {
-        getTextWords();
+        ArrayList<String> allWords = getTextWords();
+        for(String s : allWords){
+            System.out.println(s);
+        }
     }
 
     @FXML
@@ -83,11 +88,18 @@ public class WoordenController implements Initializable {
          throw new UnsupportedOperationException("Not supported yet."); 
     }
    
-    private String[] getTextWords(){
+    private ArrayList<String> getTextWords(){
         String input = taInput.getText();
         input = input.replace(",", "");
         input = input.replace("\n", " ");
-        String[] allWords = input.split(" ");
+        String[] words = input.split(" ");
+        List<String> listWords = Arrays.asList(words);
+        ArrayList<String> allWords = new ArrayList<>();
+        for(String s : listWords){
+            if(!s.isEmpty()){
+                allWords.add(s);
+            }
+        }
         return allWords;
     }
 }
