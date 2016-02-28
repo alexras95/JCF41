@@ -70,7 +70,7 @@ public class WoordenController implements Initializable {
     
     @FXML
     private void aantalAction(ActionEvent event) {
-         throw new UnsupportedOperationException("Not supported yet."); 
+        taOutput.textProperty().set("Totaal aantal woorden: " + getTextWords().size() + "\n Aantal verschillende woorden: " + getDistinctWords().size());
     }
 
     @FXML
@@ -86,7 +86,22 @@ public class WoordenController implements Initializable {
 
     @FXML
     private void frequentieAction(ActionEvent event) {
-         throw new UnsupportedOperationException("Not supported yet."); 
+        int index = 0;
+        int count = 0;
+        String output = "";
+        String input = "";
+        for(String s : getDistinctWords()){
+            input = taInput.getText().toLowerCase();
+            index = input.indexOf(s);
+            count = 0;
+            while (index != -1) {
+                count++;
+                input = input.substring(index + 1);
+                index = input.indexOf(s);
+            }
+            output = output + s +": " + count + "\n";
+        }
+        taOutput.textProperty().set(output);
     }
 
     @FXML
