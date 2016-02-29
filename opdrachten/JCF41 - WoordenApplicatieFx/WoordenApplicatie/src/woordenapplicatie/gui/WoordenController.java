@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
 import javafx.application.Platform;
@@ -109,8 +110,14 @@ public class WoordenController implements Initializable {
     private void concordatieAction(ActionEvent event) {
         String concordanceString = "";
         HashMap concordanceWords = getWordsAtLines();
+        // voor alle keys
         for (Object k : concordanceWords.keySet()) {
-            concordanceString += String.valueOf(k) + ": " + String.valueOf(concordanceWords.get(k)) + "\n";
+            concordanceString += String.valueOf(k) + ": [";
+            TreeSet ts = (TreeSet<Integer>)concordanceWords.get(String.valueOf(k));
+            for(Object i : ts){
+                concordanceString += String.valueOf(i) + ", ";
+            }            
+            concordanceString = concordanceString.substring(0, concordanceString.length() -2) + "]\n";
         }
         taOutput.textProperty().set(concordanceString);
     }
@@ -177,6 +184,14 @@ public class WoordenController implements Initializable {
         }
         return distinctWords;
     }
+    
+    private HashMap getDistinctWordsHashMap(){
+        HashMap distinctWords = new HashMap();
+        for (String textWord : getTextWords()) {
+            distinctWords.put(textWord, "");
+        }
+        return distinctWords;
+    }
 
     /**
      * Opdracht 2
@@ -204,43 +219,31 @@ public class WoordenController implements Initializable {
      * @Description Deze methode gaat voor elk verschillend woord kijken in
      * welke regel deze zit aan de hand van de getTextWordsEnter() methode het
      * woord en de regel(s) worden opgeslagen in een HashMap, met het distinct
-     * woord als key en de regel als value.
+     * woord als key en de regelnummers als value. 
      * @return retourneert een HashMap met alle woorden en de regel(s) waar de
-     * woorden zich bevinden
+     * woorden zich bevinden deze regels staan in een TreeSet
      */
-    private HashMap getWordsAtLines() {
-        int regel = 1;
+    private HashMap<String, TreeSet<Integer>> getWordsAtLines() {
+        Integer regel = 1;
         boolean first = true;
         boolean found = false;
-        LinkedList<String> textWordsEnter = getTextWordsEnter();
-        HashMap concordanceWords = new HashMap();
-        for (String distinctWord : getDistinctWords()) {
-            first = true;
-            regel = 1;
-            for (String textWord : textWordsEnter) {
-                if (textWord.equals(distinctWord)) {
-                    found = true;
-                    if (first) {
-                        concordanceWords.put(distinctWord, "[" + regel + "]");
-                        first = false;
-                    } else {
-                        String oldValue = String.valueOf(concordanceWords.get(distinctWord));
-                        String newValue = oldValue.substring(0, oldValue.length() - 1) + ", " + regel + " ";
-                        concordanceWords.put(distinctWord, newValue);
-                    }
+        Map<String, TreeSet<Integer>> concordanceWords = new HashMap<>();
+        HashMap distinctWords = getDistinctWordsHashMap();
+        regel = 1;
+        for (String textWord : getTextWordsEnter()) {            
+            if (distinctWords.containsKey(textWord)) {
+                if(!concordanceWords.containsKey(textWord)){
+                    concordanceWords.put(textWord, new TreeSet<>());
                 }
-                if (textWord.equals("enter")) {
-                    regel++;
-                }
+                TreeSet set = concordanceWords.get(textWord);
+                set.add(regel);
+                concordanceWords.put(textWord, set);
             }
-            if (found) {
-                String oldValue = String.valueOf(concordanceWords.get(distinctWord));
-                String newValue = oldValue.substring(0, oldValue.length() - 1) + "]";
-                concordanceWords.put(distinctWord, newValue);
-                found = false;
+            if (textWord.equals("enter")) {
+                regel++;
             }
         }
-        return concordanceWords;
+        return (HashMap<String, TreeSet<Integer>>) concordanceWords;
     }
 
     /**
