@@ -5,18 +5,18 @@ package woordenapplicatie.gui;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
-
 import java.net.URL;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,27 +30,27 @@ import javafx.scene.control.TextArea;
  * @author frankcoenen
  */
 public class WoordenController implements Initializable {
-    
-   private static final String DEFAULT_TEXT =   "Een, twee, drie, vier\n" +
-                                                "Hoedje van, hoedje van\n" +
-                                                "Een, twee, drie, vier\n" +
-                                                "Hoedje van papier\n" +
-                                                "\n" +
-                                                "Heb je dan geen hoedje meer\n" +
-                                                "Maak er één van bordpapier\n" +
-                                                "Eén, twee, drie, vier\n" +
-                                                "Hoedje van papier\n" +
-                                                "\n" +
-                                                "Een, twee, drie, vier\n" +
-                                                "Hoedje van, hoedje van\n" +
-                                                "Een, twee, drie, vier\n" +
-                                                "Hoedje van papier\n" +
-                                                "\n" +
-                                                "En als het hoedje dan niet past\n" +
-                                                "Zetten we 't in de glazenkas\n" +
-                                                "Een, twee, drie, vier\n" +
-                                                "Hoedje van papier";
-    
+
+    private static final String DEFAULT_TEXT = "Een, twee, drie, vier\n"
+            + "Hoedje van, hoedje van\n"
+            + "Een, twee, drie, vier\n"
+            + "Hoedje van papier\n"
+            + "\n"
+            + "Heb je dan geen hoedje meer\n"
+            + "Maak er één van bordpapier\n"
+            + "Eén, twee, drie, vier\n"
+            + "Hoedje van papier\n"
+            + "\n"
+            + "Een, twee, drie, vier\n"
+            + "Hoedje van, hoedje van\n"
+            + "Een, twee, drie, vier\n"
+            + "Hoedje van papier\n"
+            + "\n"
+            + "En als het hoedje dan niet past\n"
+            + "Zetten we 't in de glazenkas\n"
+            + "Een, twee, drie, vier\n"
+            + "Hoedje van papier";
+
     @FXML
     private Button btAantal;
     @FXML
@@ -68,7 +68,7 @@ public class WoordenController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         taInput.setText(DEFAULT_TEXT);
     }
-    
+
     @FXML
     private void aantalAction(ActionEvent event) {
         taOutput.textProperty().set("Totaal aantal woorden: " + getTextWords().size() + "\n Aantal verschillende woorden: " + getDistinctWords().size());
@@ -77,9 +77,9 @@ public class WoordenController implements Initializable {
     @FXML
     private void sorteerAction(ActionEvent event) {
         taOutput.setText("");
-        LinkedList<String> allWords = getDescendingSortedWords();
+        TreeSet<String> allWords = getDescendingSortedWords();
         String textOutput = "";
-        for(String s : allWords){
+        for (String s : allWords) {
             textOutput += s + "\n";
         }
         taOutput.textProperty().set(textOutput);
@@ -91,7 +91,7 @@ public class WoordenController implements Initializable {
         int count = 0;
         String output = "";
         String input = "";
-        for(String s : getDistinctWords()){
+        for (String s : getDistinctWords()) {
             input = taInput.getText().toLowerCase();
             index = input.indexOf(s);
             count = 0;
@@ -100,138 +100,161 @@ public class WoordenController implements Initializable {
                 input = input.substring(index + 1);
                 index = input.indexOf(s);
             }
-            output = output + s +": " + count + "\n";
+            output = output + s + ": " + count + "\n";
         }
         taOutput.textProperty().set(output);
     }
 
     @FXML
     private void concordatieAction(ActionEvent event) {
-        taOutput.textProperty().set(getWordsAtLines());
+        String concordanceString = "";
+        HashMap concordanceWords = getWordsAtLines();
+        for (Object k : concordanceWords.keySet()) {
+            concordanceString += String.valueOf(k) + ": " + String.valueOf(concordanceWords.get(k)) + "\n";
+        }
+        taOutput.textProperty().set(concordanceString);
     }
-   
+
     /**
      * @Author Frank Haver
-     * Pakt alle losse woorden uit de inputbox en zet deze in een arraylist
-     * de lege woorden worden er uit gefilterd
-     * ook worden alle accenten van de letters afgehaald
-     * @return retourneert de arraylist met alle losse woorden
+     * @Description Pakt alle losse woorden uit de inputbox en zet deze in een
+     * arraylist de lege woorden worden er uit gefilterd ook worden alle
+     * accenten van de letters afgehaald
+     * @return retourneert de LinkedList met alle losse woorden
      */
-    private LinkedList<String> getTextWords(){
+    private LinkedList<String> getTextWords() {
         String input = taInput.getText();
         input = input.replace(",", "");
         input = input.replace("\n", " ");
         String[] words = input.split(" ");
         List<String> listWords = Arrays.asList(words);
         LinkedList<String> allWords = new LinkedList<>();
-        for(String s : listWords){
-            if(!s.isEmpty()){
+        for (String s : listWords) {
+            if (!s.isEmpty()) {
                 s = s.toLowerCase();
                 s = Normalizer.normalize(s, Normalizer.Form.NFD);
                 s = s.replaceAll("[^\\p{ASCII}]", "");
                 allWords.add(s);
-                
             }
         }
         return allWords;
     }
-    
+
     /**
      * @Author Frank Haver
-     * Geeft alle woorden uit het versje terug met de enters erbij als text
-     * @return retourneert een ArrayList met 'enter' woorden
+     * @Description Geeft alle woorden uit het versje terug met de enters erbij
+     * als text
+     * @return retourneert een LinkedList met 'enter' woorden
      */
-    private LinkedList<String> getTextWordsEnter(){
+    private LinkedList<String> getTextWordsEnter() {
         String input = taInput.getText();
         input = input.replace(",", "");
         input = input.replace("\n", " enter ");
         String[] words = input.split(" ");
         List<String> listWords = Arrays.asList(words);
         LinkedList<String> allWords = new LinkedList<>();
-        for(String s : listWords){
-            if(!s.isEmpty()){
+        for (String s : listWords) {
+            if (!s.isEmpty()) {
                 s = s.toLowerCase();
                 s = Normalizer.normalize(s, Normalizer.Form.NFD);
                 s = s.replaceAll("[^\\p{ASCII}]", "");
                 allWords.add(s);
-                
             }
         }
         return allWords;
     }
-    
+
     /**
-     * @Author Frank Haver
-     * Deze methode pakt alle verschillende woorden en zet deze in een ArrayList 
-     * @return retourneert een ArrayList van alle verschillende woorden
+     * @Author Frank Haver Deze methode pakt alle verschillende woorden en zet
+     * @Description deze in een HashSet dit kan in een HashSet omdat hier toch
+     * geen dubbele entries in kunnen staan
+     * @return retourneert een HashSet van alle verschillende woorden
      */
-    private LinkedList<String> getDistinctWords(){
-        LinkedList<String> distinctWords = new LinkedList<>();
-        boolean found = false;
-        for(String textWord : getTextWords()){
-            for(String distinctWord : distinctWords){
-                if(textWord.equals(distinctWord)){
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){
-                distinctWords.add(textWord);           
-            }
-            found = false;
+    private HashSet<String> getDistinctWords() {
+        HashSet<String> distinctWords = new HashSet<>();
+        for (String textWord : getTextWords()) {
+            distinctWords.add(textWord);
         }
         return distinctWords;
     }
-    
+
     /**
      * Opdracht 2
+     *
      * @Author Frank Haver
-     * Deze methode sorteert de verschillende woorden alfabetisch maar dan andersom
-     * @return de lijst van omgekeerde woorden
+     * @Description Deze methode pakt alle verschillende woorden en zet deze in
+     * een TreeSet gesorteerd achterstevoren omdat een TreeSet geen dubbele
+     * entries kan heb je alle distinct woorden Het wordt gesorteerd door het
+     * toevoegen van een eigen Comparer
+     * @return retourneert een TreeSet van alle verschillende woorden
+     * achterstevoren gesorteerd
      */
-    private LinkedList<String> getDescendingSortedWords(){ 
-        LinkedList<String> descendingSorted = getDistinctWords();
-        Collections.sort(descendingSorted, Collections.reverseOrder());
-        return descendingSorted;
+    private TreeSet<String> getDescendingSortedWords() {
+        TreeSet<String> distinctWords = new TreeSet<>(new StringComparator());
+        for (String textWord : getTextWords()) {
+            distinctWords.add(textWord);
+        }
+        return distinctWords;
     }
-    
+
     /**
      * Opdracht 4
+     *
      * @Author Frank Haver
-     * Deze methode gaat voor elk verschillend woord kijken in welke regel deze
-     * zit aan de hand van de getTextWordsEnter() methode 
-     * @return retourneert een string met alle woorden en de regel(s) 
-     * waar de woorden zich bevinden
+     * @Description Deze methode gaat voor elk verschillend woord kijken in
+     * welke regel deze zit aan de hand van de getTextWordsEnter() methode het
+     * woord en de regel(s) worden opgeslagen in een HashMap, met het distinct
+     * woord als key en de regel als value.
+     * @return retourneert een HashMap met alle woorden en de regel(s) waar de
+     * woorden zich bevinden
      */
-    private String getWordsAtLines(){
+    private HashMap getWordsAtLines() {
         int regel = 1;
-        String wordsAtLines = "";
         boolean first = true;
         boolean found = false;
         LinkedList<String> textWordsEnter = getTextWordsEnter();
-        for(String distinctWord : getDistinctWords()){
+        HashMap concordanceWords = new HashMap();
+        for (String distinctWord : getDistinctWords()) {
             first = true;
             regel = 1;
-            for(String textWord : textWordsEnter){
-                if(textWord.equals(distinctWord)){
+            for (String textWord : textWordsEnter) {
+                if (textWord.equals(distinctWord)) {
                     found = true;
-                    if(first){
-                        wordsAtLines += textWord + " [";
+                    if (first) {
+                        concordanceWords.put(distinctWord, "[" + regel + "]");
                         first = false;
+                    } else {
+                        String oldValue = String.valueOf(concordanceWords.get(distinctWord));
+                        String newValue = oldValue.substring(0, oldValue.length() - 1) + ", " + regel + " ";
+                        concordanceWords.put(distinctWord, newValue);
                     }
-                    wordsAtLines += regel + ", ";
                 }
-                if(textWord.equals("enter")){
+                if (textWord.equals("enter")) {
                     regel++;
                 }
             }
-            if(found){
-                wordsAtLines = wordsAtLines.substring(0, wordsAtLines.length() - 2) + "]\n";
+            if (found) {
+                String oldValue = String.valueOf(concordanceWords.get(distinctWord));
+                String newValue = oldValue.substring(0, oldValue.length() - 1) + "]";
+                concordanceWords.put(distinctWord, newValue);
                 found = false;
             }
         }
-        return wordsAtLines;
+        return concordanceWords;
     }
-    
-    
+
+    /**
+     * @Author Frank Haver
+     * @Description Eigen comparator voor het vergelijken van strings als er een
+     * sort wordt aangeroepen dan wordt er alfabetisch gesorteerd van z-a
+     */
+    public class StringComparator implements Comparator {
+
+        public int compare(Object o1, Object o2) {
+            String s1 = (String) o1,
+                    s2 = (String) o2;
+            return s2.compareTo(s1);
+        }
+    }
+
 }
