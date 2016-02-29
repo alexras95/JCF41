@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -76,7 +77,7 @@ public class WoordenController implements Initializable {
     @FXML
     private void sorteerAction(ActionEvent event) {
         taOutput.setText("");
-        List<String> allWords = getDescendingSortedWords();
+        LinkedList<String> allWords = getDescendingSortedWords();
         String textOutput = "";
         for(String s : allWords){
             textOutput += s + "\n";
@@ -116,13 +117,13 @@ public class WoordenController implements Initializable {
      * ook worden alle accenten van de letters afgehaald
      * @return retourneert de arraylist met alle losse woorden
      */
-    private ArrayList<String> getTextWords(){
+    private LinkedList<String> getTextWords(){
         String input = taInput.getText();
         input = input.replace(",", "");
         input = input.replace("\n", " ");
         String[] words = input.split(" ");
         List<String> listWords = Arrays.asList(words);
-        ArrayList<String> allWords = new ArrayList<>();
+        LinkedList<String> allWords = new LinkedList<>();
         for(String s : listWords){
             if(!s.isEmpty()){
                 s = s.toLowerCase();
@@ -140,13 +141,13 @@ public class WoordenController implements Initializable {
      * Geeft alle woorden uit het versje terug met de enters erbij als text
      * @return retourneert een ArrayList met 'enter' woorden
      */
-    private ArrayList<String> getTextWordsEnter(){
+    private LinkedList<String> getTextWordsEnter(){
         String input = taInput.getText();
         input = input.replace(",", "");
         input = input.replace("\n", " enter ");
         String[] words = input.split(" ");
         List<String> listWords = Arrays.asList(words);
-        ArrayList<String> allWords = new ArrayList<>();
+        LinkedList<String> allWords = new LinkedList<>();
         for(String s : listWords){
             if(!s.isEmpty()){
                 s = s.toLowerCase();
@@ -164,8 +165,8 @@ public class WoordenController implements Initializable {
      * Deze methode pakt alle verschillende woorden en zet deze in een ArrayList 
      * @return retourneert een ArrayList van alle verschillende woorden
      */
-    private List<String> getDistinctWords(){
-        List<String> distinctWords = new ArrayList<>();
+    private LinkedList<String> getDistinctWords(){
+        LinkedList<String> distinctWords = new LinkedList<>();
         boolean found = false;
         for(String textWord : getTextWords()){
             for(String distinctWord : distinctWords){
@@ -188,8 +189,8 @@ public class WoordenController implements Initializable {
      * Deze methode sorteert de verschillende woorden alfabetisch maar dan andersom
      * @return de lijst van omgekeerde woorden
      */
-    private List<String> getDescendingSortedWords(){ 
-        List<String> descendingSorted = getDistinctWords();
+    private LinkedList<String> getDescendingSortedWords(){ 
+        LinkedList<String> descendingSorted = getDistinctWords();
         Collections.sort(descendingSorted, Collections.reverseOrder());
         return descendingSorted;
     }
@@ -207,7 +208,7 @@ public class WoordenController implements Initializable {
         String wordsAtLines = "";
         boolean first = true;
         boolean found = false;
-        ArrayList<String> textWordsEnter = getTextWordsEnter();
+        LinkedList<String> textWordsEnter = getTextWordsEnter();
         for(String distinctWord : getDistinctWords()){
             first = true;
             regel = 1;
