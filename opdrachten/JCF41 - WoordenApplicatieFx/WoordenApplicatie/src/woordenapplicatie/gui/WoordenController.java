@@ -88,22 +88,22 @@ public class WoordenController implements Initializable {
 
     @FXML
     private void frequentieAction(ActionEvent event) {
-        int index = 0;
-        int count = 0;
-        String output = "";
-        String input = "";
-        for (String s : getDistinctWords()) {
-            input = taInput.getText().toLowerCase();
-            index = input.indexOf(s);
-            count = 0;
-            while (index != -1) {
-                count++;
-                input = input.substring(index + 1);
-                index = input.indexOf(s);
+        String textOutput = "";
+        Map<String, Integer> frequenceWords = new HashMap<>();
+        for (String textWord : getTextWordsEnter()) {
+            if (getDistinctWordsHashMap().containsKey(textWord)) {
+                if(!frequenceWords.containsKey(textWord)){
+                    frequenceWords.put(textWord, 1);
+                }
+                else{
+                    frequenceWords.put(textWord,frequenceWords.get(textWord) + 1);
+                }
             }
-            output = output + s + ": " + count + "\n";
         }
-        taOutput.textProperty().set(output);
+        for(Map.Entry<String, Integer> entry : frequenceWords.entrySet()){
+            textOutput = textOutput + entry.getKey() + ": " + entry.getValue().toString() + "\n";
+        }
+        taOutput.textProperty().set(textOutput);
     }
 
     @FXML
@@ -116,7 +116,7 @@ public class WoordenController implements Initializable {
             TreeSet ts = (TreeSet<Integer>)concordanceWords.get(String.valueOf(k));
             for(Object i : ts){
                 concordanceString += String.valueOf(i) + ", ";
-            }            
+            }
             concordanceString = concordanceString.substring(0, concordanceString.length() -2) + "]\n";
         }
         taOutput.textProperty().set(concordanceString);
@@ -184,7 +184,7 @@ public class WoordenController implements Initializable {
         }
         return distinctWords;
     }
-    
+
     private HashMap getDistinctWordsHashMap(){
         HashMap distinctWords = new HashMap();
         for (String textWord : getTextWords()) {
@@ -219,7 +219,7 @@ public class WoordenController implements Initializable {
      * @Description Deze methode gaat voor elk verschillend woord kijken in
      * welke regel deze zit aan de hand van de getTextWordsEnter() methode het
      * woord en de regel(s) worden opgeslagen in een HashMap, met het distinct
-     * woord als key en de regelnummers als value. 
+     * woord als key en de regelnummers als value.
      * @return retourneert een HashMap met alle woorden en de regel(s) waar de
      * woorden zich bevinden deze regels staan in een TreeSet
      */
@@ -230,7 +230,7 @@ public class WoordenController implements Initializable {
         Map<String, TreeSet<Integer>> concordanceWords = new HashMap<>();
         HashMap distinctWords = getDistinctWordsHashMap();
         regel = 1;
-        for (String textWord : getTextWordsEnter()) {            
+        for (String textWord : getTextWordsEnter()) {
             if (distinctWords.containsKey(textWord)) {
                 if(!concordanceWords.containsKey(textWord)){
                     concordanceWords.put(textWord, new TreeSet<>());
