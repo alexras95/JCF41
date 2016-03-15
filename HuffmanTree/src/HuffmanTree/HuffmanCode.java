@@ -1,38 +1,11 @@
+package HuffmanTree;
+
 import java.util.*;
- 
-abstract class HuffmanTree implements Comparable<HuffmanTree> {
-    public final int frequency; // the frequency of this tree
-    public HuffmanTree(int freq) { frequency = freq; }
- 
-    // compares on the frequency
-    public int compareTo(HuffmanTree tree) {
-        return frequency - tree.frequency;
-    }
-}
- 
-class HuffmanLeaf extends HuffmanTree {
-    public final char value; // the character this leaf represents
- 
-    public HuffmanLeaf(int freq, char val) {
-        super(freq);
-        value = val;
-    }
-}
- 
-class HuffmanNode extends HuffmanTree {
-    public final HuffmanTree left, right; // subtrees
- 
-    public HuffmanNode(HuffmanTree l, HuffmanTree r) {
-        super(l.frequency + r.frequency);
-        left = l;
-        right = r;
-    }
-}
- 
+
 public class HuffmanCode {
     // input is an array of frequencies, indexed by character code
     public static HuffmanTree buildTree(int[] charFreqs) {
-        PriorityQueue<HuffmanTree> trees = new PriorityQueue<HuffmanTree>();
+        PriorityQueue<HuffmanTree> trees = new PriorityQueue<>();
         // initially, we have a forest of leaves
         // one for each non-empty character
         for (int i = 0; i < charFreqs.length; i++)
