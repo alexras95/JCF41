@@ -18,10 +18,7 @@ import java.util.TreeMap;
  */
 public class HuffmanCodering {
 
-    private static final String DEFAULT_TEXT = "Een, twee, drie, vier\n"
-            + "Hoedje van, hoedje van\n"
-            + "Een, twee, drie, vier\n"
-            + "Hoedje van papier\n";
+    private static final String DEFAULT_TEXT = "zandbak";
 
     /**
      * @param args the command line arguments
