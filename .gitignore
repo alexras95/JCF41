@@ -15,3 +15,6 @@ sheets/JCF41 - Collections (3).ppt
 sheets/JCF41 - Collections (3).ppt
 *.ppt
 HuffmanTree/nbproject/project.properties
+/JTree/nbproject/private/
+/JTree/build/
+/JTree/dist/

@@ -7,7 +7,7 @@ package HuffmanTree;
 
 abstract class HuffmanTree implements Comparable<HuffmanTree> {
 
-    public final int frequency; 
+    public final int frequency;
 
     public HuffmanTree(int freq) {
         frequency = freq;
