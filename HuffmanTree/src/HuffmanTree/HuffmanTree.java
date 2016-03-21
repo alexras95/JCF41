@@ -7,13 +7,13 @@ package HuffmanTree;
 
 abstract class HuffmanTree implements Comparable<HuffmanTree> {
 
-    public final int frequency; // the frequency of this tree
+    public final int frequency; 
 
     public HuffmanTree(int freq) {
         frequency = freq;
     }
 
-    // compares on the frequency
+    // zet in de juiste plek in de PriorityQueue met laagste frequentie bovenaan
     public int compareTo(HuffmanTree tree) {
         return frequency - tree.frequency;
     }

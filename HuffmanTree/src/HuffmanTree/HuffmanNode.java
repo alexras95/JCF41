@@ -7,7 +7,7 @@ package HuffmanTree;
 
 class HuffmanNode extends HuffmanTree {
 
-    public final HuffmanTree left, right; // subtrees
+    public final HuffmanTree left, right; 
 
     public HuffmanNode(HuffmanTree l, HuffmanTree r) {
         super(l.frequency + r.frequency);

@@ -7,7 +7,7 @@ package HuffmanTree;
 
 class HuffmanLeaf extends HuffmanTree {
 
-    public final char value; // the character this leaf represents
+    public final char value; 
 
     public HuffmanLeaf(int freq, char val) {
         super(freq);
