@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package huffmanboom;
 
 import java.util.HashMap;
@@ -16,30 +11,31 @@ import java.util.Queue;
  */
 public class HuffmanBoom {
 
-     static final String INPUT = "Hello world";
+     static final String INPUT = "Bananen";
 
     public static void main(String[] args) {
-        Map count = countCharacters(INPUT);
+        Map count = telLetters(INPUT);
         System.out.println(count);
 
-        Queue sorted = sortCount(count);
+        Queue sorted = sorteerLijst(count);
         System.out.println(sorted);
 
-        Node tree = buildTree(sorted);
+        Node tree = bouwHuffmanboom(sorted);
         System.out.println(tree);
 
         Map<Character, String> codes = new HashMap<Character, String>();
         getCodes(tree, codes, "");
         System.out.println(codes);
 
-        String encoded = encode(INPUT, codes);
+        String encoded = codeer(INPUT, codes);
         System.out.println(encoded);
 
-        String decoded = decode(encoded, tree);
+        String decoded = decodeer(encoded, tree);
         System.out.println(decoded);
     }
 
-    public static Map<Character, Integer> countCharacters(String input) {
+    //For-loop is O(n), en de put ook dus worst case is deze methode O(n^2)
+    public static Map<Character, Integer> telLetters(String input) {
         Map<Character, Integer> count = new HashMap<Character, Integer>();
         for (Character c : input.toCharArray()) {
             count.put(c, count.containsKey(c) ? count.get(c) + 1 : 1);
@@ -47,28 +43,27 @@ public class HuffmanBoom {
         return count;
     }
 
-    public static Queue<Node> sortCount(Map<Character, Integer> count) {
+    //for loop is O(n) en het toevoegen aan de lijst is log n dus deze methode is worst case O(n * log (n))
+    public static Queue<Node> sorteerLijst(Map<Character, Integer> count) {
         Queue<Node> list = new PriorityQueue<Node>();
         for (Map.Entry<Character, Integer> pair : count.entrySet()) {
             list.add(new Node(pair.getKey(), pair.getValue()));
         }
         return list;
     }
-
-    public static Node buildTree(Queue<Node> nodes) {
+    //while loop is O(n) en het toevoegen aan de lijst is log n dus deze methode is worst case O(n * log (n))
+    public static Node bouwHuffmanboom(Queue<Node> nodes) {
         while (nodes.size() > 1) {
             nodes.add(new Node(nodes.remove(), nodes.remove()));
         }
         return nodes.remove();
     }
-
+    //Deze methode loopt door iedere node heen, dus is deze methode O(n)
     public static void getCodes(Node node, Map<Character, String> codes, String root) {
-        // If the current node is a character node, store code.
         if (node.character != null) {
             codes.put(node.character, root);
         }
 
-        // Traverse left/right, if appropriate.
         if (node.left != null) {
             getCodes(node.left, codes, root + "0");
         }
@@ -76,20 +71,19 @@ public class HuffmanBoom {
             getCodes(node.right, codes, root + "1");
         }
     }
-
-    public static String encode(String input, Map<Character, String> codes) {
+    //Deze for-loop is O(n) en de get methode is O(1), dus deze methode is in totaal O(n)
+    public static String codeer(String input, Map<Character, String> codes) {
         String output = "";
         for (Character c : input.toCharArray()) {
             output += codes.get(c);
         }
         return output;
     }
-
-    public static String decode(String input, Node tree) {
+    //Door de for-loop is deze methode O(n)
+    public static String decodeer(String input, Node tree) {
         Node current = tree;
         String output = "";
         for (Character c : input.toCharArray()) {
-            // Traverse left/right.
             if (c == '0') {
                 current = current.left;
             }
@@ -97,7 +91,6 @@ public class HuffmanBoom {
                 current = current.right;
             }
 
-            // If we've reached a character node, add to output and return to root of the tree.
             if (current.character != null) {
                 output += current.character;
                 current = tree;
