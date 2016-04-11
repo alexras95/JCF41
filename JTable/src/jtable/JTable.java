@@ -10,13 +10,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -24,7 +27,7 @@ import javafx.stage.Stage;
 public class JTable extends Application {
  
     private final TableView<Person> table = new TableView<>();
-    private final ObservableList<Person> data =
+    public final ObservableList<Person> data =
             FXCollections.observableArrayList(
             new Person("1", "1"),
             new Person("2", "2"),
@@ -60,6 +63,7 @@ public class JTable extends Application {
         final Button addButton = new Button("Voeg toe aan lijst");
         addButton.setOnAction((ActionEvent e) -> {
             data.add(new Person("nieuwvoor","nieuwachter"));
+            
         });
  
         hb.getChildren().addAll(addButton);
@@ -74,6 +78,32 @@ public class JTable extends Application {
  
         stage.setScene(scene);
         stage.show();
+        
+        firstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        firstNameCol.setOnEditCommit(
+            new EventHandler<CellEditEvent<Person, String>>() {
+                @Override
+                public void handle(CellEditEvent<Person, String> t) {
+                    ((Person) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setFirstName(t.getNewValue());
+                    printData();
+                }
+            }
+        );
+
+        lastNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        lastNameCol.setOnEditCommit(
+            new EventHandler<CellEditEvent<Person, String>>() {
+                @Override
+                public void handle(CellEditEvent<Person, String> t) {
+                    ((Person) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setLastName(t.getNewValue());
+                    printData();
+                }
+            }
+        );
     }
  
     public static class Person {
@@ -100,6 +130,12 @@ public class JTable extends Application {
  
         public void setLastName(String fName) {
             lastName.set(fName);
+        }
+    }
+    
+    public void printData(){
+        for(Person p : data){
+            System.out.println(p.getFirstName() + ", " + p.getLastName());
         }
     }
 } 
