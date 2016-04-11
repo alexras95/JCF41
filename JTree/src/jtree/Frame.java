@@ -1,5 +1,8 @@
 package jtree;
 
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -17,8 +20,18 @@ public class Frame extends javax.swing.JFrame {
     /**
      * Creates new form Frame
      */
+    
+    // TreeMap van het item zelf en de parent ervan
+    TreeMap<String, String> mcBoom;
+    
     public Frame() {
         initComponents();
+        mcBoom = new TreeMap<>();
+        mcBoom.put("McDonalds", "");
+        mcBoom.put("Eten", "McDonalds");
+        mcBoom.put("Personeel", "McDonalds");
+        mcBoom.put("Interieur", "McDonalds");
+               
     }
 
     /**
@@ -61,7 +74,7 @@ public class Frame extends javax.swing.JFrame {
         boomMcDonalds.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jScrollPane1.setViewportView(boomMcDonalds);
 
-        btnVerwijderNode.setText("X");
+        btnVerwijderNode.setLabel("Update");
         btnVerwijderNode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVerwijderNodeActionPerformed(evt);
@@ -96,50 +109,39 @@ public class Frame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblOnderdeel)
                             .addComponent(tfOnderdeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnAddOnderdeel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnVerwijderNode)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
+                        .addComponent(btnVerwijderNode)
+                        .addGap(0, 172, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addComponent(lblError)
                 .addGap(69, 69, 69))
         );
 
+        btnVerwijderNode.getAccessibleContext().setAccessibleName("Update");
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnVerwijderNodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerwijderNodeActionPerformed
-        // TODO add your handling code here:
-        lblError.setText("");
-        DefaultTreeModel model = (DefaultTreeModel) boomMcDonalds.getModel();
-        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) boomMcDonalds.getLastSelectedPathComponent();
-        if (selectedNode != null) {
-            if (selectedNode.isRoot()) {
-                lblError.setText("Je kan de McDonalds niet zomaar verwijderen, OEN!");
-            }
-            else{
-                model.removeNodeFromParent(selectedNode);
-            }
-
-        } else {
-            lblError.setText("Kies een onderdeel om te verwijderen");
-        }
-
-    }//GEN-LAST:event_btnVerwijderNodeActionPerformed
-
+   
+    
     private void btnAddOnderdeelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddOnderdeelActionPerformed
         // TODO add your handling code here:
         lblError.setText("");
         DefaultTreeModel model = (DefaultTreeModel) boomMcDonalds.getModel();
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) boomMcDonalds.getLastSelectedPathComponent();
-        DefaultMutableTreeNode newCity = new DefaultMutableTreeNode(tfOnderdeel.getText());
+        DefaultMutableTreeNode newItem = new DefaultMutableTreeNode(tfOnderdeel.getText());
         if (selectedNode != null) {
+            System.out.println(selectedNode.getLevel());
             if (!tfOnderdeel.getText().trim().equals("")) {
-                model.insertNodeInto(newCity, selectedNode, selectedNode.getChildCount());
+                model.insertNodeInto(newItem, selectedNode, selectedNode.getChildCount());
+                mcBoom.put(newItem.toString(), selectedNode.toString());
+                System.out.println(mcBoom);
             } else {
                 lblError.setText("Vul een onderdeel in");
             }
@@ -147,6 +149,32 @@ public class Frame extends javax.swing.JFrame {
             lblError.setText("Je moet een onderdeel selecteren om er iets aan toe te voegen");
         }
     }//GEN-LAST:event_btnAddOnderdeelActionPerformed
+
+    // niet verwijderen maar updaten
+    private void btnVerwijderNodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerwijderNodeActionPerformed
+        // TODO add your handling code here:
+        lblError.setText("");
+        DefaultTreeModel model = (DefaultTreeModel) boomMcDonalds.getModel();
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) boomMcDonalds.getLastSelectedPathComponent();
+        
+        if (selectedNode != null) {
+            if (selectedNode.isRoot()) {
+                lblError.setText("Je kan de McDonalds niet zomaar aanpassen, OEN!");
+            }
+            else{
+                mcBoom.remove(selectedNode.toString());
+                selectedNode.setUserObject(tfOnderdeel.getText());
+                model.nodeChanged(selectedNode);
+                System.out.println(selectedNode.toString());
+                mcBoom.put(tfOnderdeel.getText(), selectedNode.getParent().toString());
+                System.out.println(mcBoom);
+            }
+
+        } else {
+            lblError.setText("Kies een onderdeel om aan te passen");
+        }
+
+    }//GEN-LAST:event_btnVerwijderNodeActionPerformed
 
     /**
      * @param args the command line arguments
